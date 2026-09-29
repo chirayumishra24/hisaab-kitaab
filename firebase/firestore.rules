@@ -1,0 +1,201 @@
+rules_version = '2';
+
+// HisabKitaab Firestore security rules.
+//
+// Principles
+//  1. Everything lives under users/{uid}; only that signed-in user can touch it.
+//  2. Documents must carry ownerId == uid and a known shape (no extra fields).
+//  3. Money invariants are enforced here too, not just in the app:
+//     - amounts are positive integers (paise) below ₹10 crore
+//     - an entry's amount/type/person never change after creation
+//     - paidAmount only grows, never exceeds amount, and status matches it
+//     - payments are append-only history (no edits, no deletes)
+//  4. Clients may only mark a message as SHARED (from their own device).
+//     SENT / FAILED / SIMULATED are written exclusively by the server (Admin SDK).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function data() {
+      return request.resource.data;
+    }
+
+    function onlyChanges(fields) {
+      return data().diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    function isShortString(v, max) {
+      return v is string && v.size() <= max;
+    }
+
+    function isOptionalString(v, max) {
+      return v == null || isShortString(v, max);
+    }
+
+    function isMoney(v) {
+      return v is int && v > 0 && v <= 10000000000;
+    }
+
+    function isISODate(v) {
+      return v == null || (v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'));
+    }
+
+    function isPhone(v) {
+      return v is string && v.matches('^[+][1-9][0-9]{7,14}$');
+    }
+
+    function isOptionalTimestamp(v) {
+      return v == null || v is timestamp;
+    }
+
+    function statusMatches(amount, paid, status) {
+      return (paid == 0 && status == 'ACTIVE')
+        || (paid > 0 && paid < amount && status == 'PARTIALLY_PAID')
+        || (paid == amount && status == 'PAID');
+    }
+
+    // ---------------------------------------------------------------- profile
+    match /users/{uid} {
+      function validProfile() {
+        return data().keys().hasOnly(['email', 'displayName', 'businessName', 'phone', 'language',
+                                      'notificationPrefs', 'messagePrefs', 'createdAt', 'updatedAt'])
+          && isShortString(data().email, 254)
+          && isShortString(data().displayName, 60) && data().displayName.size() > 0
+          && isOptionalString(data().businessName, 60)
+          && (data().phone == null || isPhone(data().phone))
+          && data().language in ['en', 'hi', 'hinglish']
+          && data().notificationPrefs is map
+          && data().messagePrefs is map
+          && data().messagePrefs.defaultChannel in ['WHATSAPP', 'SMS', 'SHARE'];
+      }
+
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && validProfile()
+        && data().createdAt == request.time && data().updatedAt == request.time;
+      allow update: if isOwner(uid) && validProfile()
+        && data().createdAt == resource.data.createdAt
+        && data().email == resource.data.email;
+      allow delete: if false;
+
+      // --------------------------------------------------------------- contacts
+      match /contacts/{contactId} {
+        function validContact() {
+          return data().keys().hasOnly(['ownerId', 'name', 'nameLower', 'phone', 'email', 'notes', 'archived',
+                                        'createdAt', 'updatedAt', 'lastActivityAt',
+                                        'lastReminderAt', 'lastReminderStatus'])
+            && data().ownerId == uid
+            && isShortString(data().name, 60) && data().name.size() > 0
+            && data().nameLower == data().name.lower()
+            && isPhone(data().phone)
+            && isOptionalString(data().email, 254)
+            && isOptionalString(data().notes, 280)
+            && data().archived is bool
+            && isOptionalTimestamp(data().lastReminderAt)
+            && (data().lastReminderStatus == null || data().lastReminderStatus in ['SHARED', 'SENT', 'FAILED', 'SIMULATED']);
+        }
+
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validContact()
+          && data().archived == false
+          && data().createdAt == request.time
+          && data().lastReminderAt == null && data().lastReminderStatus == null;
+        allow update: if isOwner(uid) && validContact()
+          && data().createdAt == resource.data.createdAt
+          // Only the server may claim a reminder was SENT / FAILED / SIMULATED.
+          && (data().lastReminderStatus == resource.data.lastReminderStatus || data().lastReminderStatus == 'SHARED');
+        allow delete: if isOwner(uid);
+      }
+
+      // ----------------------------------------------------------- transactions
+      match /transactions/{transactionId} {
+        function validEntryShape() {
+          return data().keys().hasOnly(['ownerId', 'contactId', 'type', 'amount', 'paidAmount', 'status', 'note',
+                                        'category', 'dueDate', 'reminderEnabled', 'messageStatus',
+                                        'lastReminderAt', 'createdAt', 'updatedAt', 'paidAt'])
+            && data().ownerId == uid
+            && data().type in ['RECEIVABLE', 'PAYABLE']
+            && isMoney(data().amount)
+            && data().paidAmount is int && data().paidAmount >= 0 && data().paidAmount <= data().amount
+            && statusMatches(data().amount, data().paidAmount, data().status)
+            && isOptionalString(data().note, 140)
+            && isOptionalString(data().category, 40)
+            && isISODate(data().dueDate)
+            && data().reminderEnabled is bool
+            && isOptionalTimestamp(data().lastReminderAt)
+            && isOptionalTimestamp(data().paidAt);
+        }
+
+        allow read: if isOwner(uid);
+
+        allow create: if isOwner(uid) && validEntryShape()
+          && exists(/databases/$(database)/documents/users/$(uid)/contacts/$(data().contactId))
+          && data().paidAmount == 0 && data().status == 'ACTIVE'
+          && data().messageStatus == 'NOT_SENT'
+          && data().createdAt == request.time;
+
+        allow update: if isOwner(uid) && validEntryShape()
+          // Identity and original amount of an entry are permanent history.
+          && data().contactId == resource.data.contactId
+          && data().type == resource.data.type
+          && data().amount == resource.data.amount
+          && data().createdAt == resource.data.createdAt
+          && (
+            // Settling: paidAmount can only grow.
+            (onlyChanges(['paidAmount', 'status', 'updatedAt', 'paidAt'])
+              && data().paidAmount > resource.data.paidAmount)
+            // Editing details.
+            || onlyChanges(['note', 'category', 'dueDate', 'reminderEnabled', 'updatedAt'])
+            // Recording a device share.
+            || (onlyChanges(['messageStatus', 'lastReminderAt']) && data().messageStatus == 'SHARED')
+          );
+
+        // Entries with payments against them are history and can't be deleted.
+        allow delete: if isOwner(uid) && resource.data.paidAmount == 0;
+      }
+
+      // --------------------------------------------------------------- payments
+      match /payments/{paymentId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && data().keys().hasOnly(['ownerId', 'contactId', 'type', 'amount', 'allocations', 'note', 'createdAt'])
+          && data().ownerId == uid
+          && data().contactId is string
+          && data().type in ['RECEIVABLE', 'PAYABLE']
+          && isMoney(data().amount)
+          && data().allocations is list && data().allocations.size() > 0 && data().allocations.size() <= 200
+          && isOptionalString(data().note, 140)
+          && data().createdAt == request.time;
+        allow update, delete: if false;
+      }
+
+      // --------------------------------------------------------------- messages
+      match /messages/{messageId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && data().keys().hasOnly(['ownerId', 'contactId', 'transactionId', 'kind', 'channel', 'status', 'to',
+                                    'body', 'provider', 'error', 'createdAt'])
+          && data().ownerId == uid
+          && data().kind in ['REMINDER', 'NEW_ENTRY', 'PAYMENT_THANKS']
+          && data().channel in ['WHATSAPP_LINK', 'SMS_LINK', 'SHARE', 'COPY']
+          && data().status == 'SHARED'
+          && isShortString(data().to, 20)
+          && isShortString(data().body, 1000)
+          && data().createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

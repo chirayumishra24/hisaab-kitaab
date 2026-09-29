@@ -1,0 +1,38 @@
+{
+  "name": "@hisabkitaab/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared types, money math, validation, messaging and Firestore data layer for HisabKitaab web + mobile.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./data": "./src/data/index.ts",
+    "./react": "./src/react/index.ts",
+    "./server": "./src/server/index.ts"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "^4.1.0"
+  },
+  "peerDependencies": {
+    "firebase": "^12.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/react": "~19.2.0",
+    "eslint": "^9.39.0",
+    "firebase": "^12.19.0",
+    "react": "19.2.3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^4.0.0"
+  }
+}

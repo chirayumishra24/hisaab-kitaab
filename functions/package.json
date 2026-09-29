@@ -1,0 +1,22 @@
+{
+  "name": "@hisabkitaab/functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HisabKitaab Cloud Functions (messaging API). Bundled with esbuild so the shared package ships inside lib/.",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=lib/index.js --external:firebase-admin --external:firebase-functions --legal-comments=none",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,36 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+.expo/
+web-build/
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+*.pem
+serviceAccount*.json
+service-account*.json
+
+# firebase
+.firebase/
+.emulator-data/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# misc
+.DS_Store
+*.log
+.playwright-cli/
+playwright-report/
+test-results/
+functions/lib/

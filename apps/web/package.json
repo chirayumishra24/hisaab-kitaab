@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
+    "postbuild": "node -e \"const fs=require('fs'),path=require('path'); const src=path.join('.next','standalone','apps','web'); if(fs.existsSync(src)){fs.cpSync(src,path.join('.next','standalone'),{recursive:true});}\"",
     "start": "next start --port 3000",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },
   "dependencies": {
-    "@hisabkitaab/shared": "0.1.0",
+    "@hisabkitaab/shared": "file:./hisabkitaab-shared-0.1.0.tgz",
     "@phosphor-icons/react": "^2.1.10",
     "firebase": "^12.19.0",
     "motion": "^13.4.4",

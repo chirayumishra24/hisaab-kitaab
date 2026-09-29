@@ -27,6 +27,7 @@ import { Switch } from "../ui/Switch";
 import { useToast } from "../ui/Toast";
 import { cn } from "../ui/cn";
 import { useServices } from "./AppServices";
+import { PickContactButton, type PickedContact } from "./ContactPicker";
 import { useDialogs, type DialogRequest } from "./DialogsProvider";
 
 type DueChoice = "none" | "week" | "twoWeeks" | "month" | "pick";
@@ -116,6 +117,20 @@ function AddHisabForm({
     else if (query) setNewPhone(query);
   };
 
+  // A phone-book pick reuses the existing person with that number, else fills in a new one.
+  const applyPickedContact = (picked: PickedContact) => {
+    const existing = picked.e164 ? people.find((p) => p.contact.phone === picked.e164) : undefined;
+    if (existing) {
+      choosePerson(existing.contact.id);
+      return;
+    }
+    setCreating(true);
+    setContactId(null);
+    if (picked.name) setNewName(picked.name);
+    setNewPhone(picked.phone);
+    setErrors((e) => ({ ...e, name: "", phone: "", contactId: "" }));
+  };
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
@@ -202,6 +217,7 @@ function AddHisabForm({
                 </button>
               ) : null}
             </div>
+            <PickContactButton onPick={applyPickedContact} />
             <Field label={t("personForm.name")} error={err("name")}>
               <Input
                 value={newName}
@@ -225,6 +241,7 @@ function AddHisabForm({
           </div>
         ) : (
           <div className="flex flex-col gap-2">
+            <PickContactButton onPick={applyPickedContact} />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}

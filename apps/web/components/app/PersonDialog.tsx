@@ -11,6 +11,7 @@ import { Dialog } from "../ui/Dialog";
 import { Field, Input, Textarea } from "../ui/Field";
 import { useToast } from "../ui/Toast";
 import { useServices } from "./AppServices";
+import { PickContactButton } from "./ContactPicker";
 import { useDialogs, type DialogRequest } from "./DialogsProvider";
 
 export function PersonDialog({
@@ -95,6 +96,13 @@ function PersonForm({ contactId, onDone }: { contactId?: string; onDone: () => v
       }}
       className="flex flex-col gap-4"
     >
+      <PickContactButton
+        onPick={(picked) => {
+          if (picked.name) setName(picked.name);
+          setPhone(picked.phone);
+          setErrors({});
+        }}
+      />
       <Field label={t("personForm.name")} error={err("name")}>
         <Input
           value={name}

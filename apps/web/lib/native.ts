@@ -9,7 +9,30 @@ import { useEffect, useSyncExternalStore } from "react";
  */
 
 type SystemBarsPlugin = { setStyle(options: { style: "DARK" | "LIGHT" | "DEFAULT"; bar?: string }): Promise<void> };
-type CapacitorGlobal = { Plugins?: { SystemBars?: SystemBarsPlugin } };
+
+/** Our own Android plugin (apps/mobile/android/.../HisabNativePlugin.java), shipped from app 1.2. */
+export interface HisabNativePlugin {
+  pickContact(): Promise<{ cancelled: boolean; name?: string; phone?: string }>;
+  openSms(options: { to: string; body: string }): Promise<void>;
+  openWhatsApp(options: { to: string; body: string }): Promise<void>;
+  share(options: { text: string }): Promise<void>;
+}
+
+type CapacitorGlobal = {
+  Plugins?: { SystemBars?: SystemBarsPlugin; HisabNative?: HisabNativePlugin };
+  isPluginAvailable?: (name: string) => boolean;
+};
+
+function capacitor(): CapacitorGlobal | undefined {
+  return typeof window === "undefined" ? undefined : (window as unknown as { Capacitor?: CapacitorGlobal }).Capacitor;
+}
+
+/** The native plugin, or null in a browser or in an app build older than 1.2. */
+export function hisabNative(): HisabNativePlugin | null {
+  const cap = capacitor();
+  if (!cap?.isPluginAvailable?.("HisabNative")) return null;
+  return cap.Plugins?.HisabNative ?? null;
+}
 
 export function isNativeApp(): boolean {
   return typeof document !== "undefined" && document.documentElement.classList.contains("native");
@@ -29,7 +52,7 @@ export function useNativeApp(): boolean {
 export function useStatusBarStyle(style: "DARK" | "DEFAULT") {
   useEffect(() => {
     if (!isNativeApp()) return;
-    const bars = (window as unknown as { Capacitor?: CapacitorGlobal }).Capacitor?.Plugins?.SystemBars;
+    const bars = capacitor()?.Plugins?.SystemBars;
     if (!bars) return;
     bars.setStyle({ style, bar: "StatusBar" }).catch(() => undefined);
     return () => {

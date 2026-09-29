@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "HisabKitaab",
   webDir: "dist",
   // Lets the web app recognise the Android shell (see NATIVE_BOOT in apps/web/app/layout.tsx).
-  appendUserAgent: "HisabKitaabApp/1.1",
+  appendUserAgent: "HisabKitaabApp/1.2",
   backgroundColor: "#f5f7f6",
   server: {
     url: "https://hisabkitaab--ideathon-projects.us-central1.hosted.app/dashboard",

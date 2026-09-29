@@ -42,7 +42,13 @@ export const hi: DeepPartial<Dictionary> = {
   filters: { ALL: "सभी", RECEIVE: "लेने हैं", PAY: "देने हैं", OVERDUE: "बकाया", PAID: "चुकता", SETTLED: "साफ़" },
   people: { title: "लोग", add: "व्यक्ति जोड़ें", searchPlaceholder: "नाम या नंबर से खोजें" },
   person: { sendReminder: "याद दिलाएँ", markPaid: "चुकता करें", addEntry: "लेन-देन जोड़ें" },
-  reminder: { sendWhatsApp: "WhatsApp पर भेजें", copy: "मैसेज कॉपी करें", share: "शेयर करें" },
+  personForm: { fromContacts: "फ़ोन के कॉन्टैक्ट से चुनें" },
+  reminder: {
+    sendWhatsApp: "WhatsApp पर भेजें",
+    copy: "मैसेज कॉपी करें",
+    share: "शेयर करें",
+    fromYourNumber: "मैसेज आपके अपने नंबर से जाएगा। WhatsApp या SMS ऐप में मैसेज तैयार मिलेगा, बस Send दबाएँ।",
+  },
   messages: {
     reminder: "नमस्ते {name},\nयाद दिला रहे हैं कि हमारे पिछले लेन-देन के {amount} बाकी हैं।{note}{due}",
     reminderNote: "\nकिसलिए: {note}",

@@ -12,8 +12,11 @@ import {
   createWhatsAppLinkProvider,
   MessageService,
   type DeviceChannel,
+  type MessageProvider,
+  type OutgoingMessage,
 } from "@hisabkitaab/shared";
 import { recordDeviceShare } from "@hisabkitaab/shared/data";
+import { hisabNative, type HisabNativePlugin } from "./native";
 
 /**
  * Base URL of the HisabKitaab API (Cloud Function hkApi, also reachable via the
@@ -44,6 +47,25 @@ async function copyText(text: string) {
   if (!ok) throw new Error("Copy not supported");
 }
 
+/**
+ * Inside the Android app, hand the message to the phone's own WhatsApp / SMS app
+ * (so it goes out from the user's number) or the system share sheet.
+ */
+function nativeProvider(
+  channel: "WHATSAPP_LINK" | "SMS_LINK" | "SHARE",
+  plugin: HisabNativePlugin,
+  open: (plugin: HisabNativePlugin, message: OutgoingMessage) => Promise<void>,
+): MessageProvider {
+  return {
+    channel,
+    isAvailable: () => true,
+    async send(message) {
+      await open(plugin, message);
+      return { channel, status: "SHARED" };
+    },
+  };
+}
+
 /** MessageService wired for the browser: server SMS/WhatsApp when configured, otherwise device fallbacks. */
 export function createWebMessageService(auth: Auth, db: Firestore, uid: string) {
   const getIdToken = async () => (auth.currentUser ? auth.currentUser.getIdToken() : null);
@@ -53,26 +75,33 @@ export function createWebMessageService(auth: Auth, db: Firestore, uid: string) 
     if (win) win.opener = null;
     else window.location.href = url;
   };
+  const native = hisabNative();
   return new MessageService(
     [
       createServerProvider("SMS", { baseUrl: API_BASE_URL, getIdToken, capabilities }),
       createServerProvider("WHATSAPP", { baseUrl: API_BASE_URL, getIdToken, capabilities }),
-      createWhatsAppLinkProvider(openUrl),
-      createSmsLinkProvider(async (url) => {
-        window.location.href = url;
-      }, isTouchDevice),
-      createShareProvider(
-        async (text) => {
-          try {
-            await navigator.share({ text });
-            return true;
-          } catch (error) {
-            if ((error as DOMException).name === "AbortError") return false;
-            throw error;
-          }
-        },
-        () => typeof navigator !== "undefined" && typeof navigator.share === "function",
-      ),
+      native
+        ? nativeProvider("WHATSAPP_LINK", native, (p, m) => p.openWhatsApp({ to: m.to, body: m.body }))
+        : createWhatsAppLinkProvider(openUrl),
+      native
+        ? nativeProvider("SMS_LINK", native, (p, m) => p.openSms({ to: m.to, body: m.body }))
+        : createSmsLinkProvider(async (url) => {
+            window.location.href = url;
+          }, isTouchDevice),
+      native
+        ? nativeProvider("SHARE", native, (p, m) => p.share({ text: m.body }))
+        : createShareProvider(
+            async (text) => {
+              try {
+                await navigator.share({ text });
+                return true;
+              } catch (error) {
+                if ((error as DOMException).name === "AbortError") return false;
+                throw error;
+              }
+            },
+            () => typeof navigator !== "undefined" && typeof navigator.share === "function",
+          ),
       createCopyProvider(copyText),
     ],
     (message, result) =>

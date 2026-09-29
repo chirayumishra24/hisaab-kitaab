@@ -5,6 +5,7 @@ import {
   ChatCircleText,
   CheckCircle,
   Copy,
+  DeviceMobile,
   PaperPlaneTilt,
   ShareNetwork,
   WarningCircle,
@@ -166,6 +167,13 @@ function ReminderComposer({ request, onDone }: { request: Request; onDone: () =>
           </p>
         ) : null}
       </div>
+
+      {primary === "WHATSAPP_LINK" || primary === "SMS_LINK" ? (
+        <p className="-mt-1 flex items-start gap-2 text-[13px] leading-snug text-muted">
+          <DeviceMobile size={16} weight="bold" className="mt-px shrink-0 text-receive" aria-hidden />
+          {t("reminder.fromYourNumber")}
+        </p>
+      ) : null}
 
       {result ? <ResultBanner result={result} /> : null}
 

@@ -145,6 +145,8 @@ export const en = {
     notesPlaceholder: "e.g. Shop next to the temple",
     submit: "Save person",
     submitAndAdd: "Save & add money",
+    fromContacts: "Pick from contacts",
+    contactsError: "Couldn't open your contacts. Type the number instead.",
   },
   entryForm: {
     title: "Add Hisab",
@@ -236,6 +238,7 @@ export const en = {
     sendWhatsApp: "Send on WhatsApp",
     openWhatsApp: "Open WhatsApp",
     openSms: "Open SMS app",
+    fromYourNumber: "Goes from your own number. WhatsApp or your SMS app opens with the message ready, then tap Send.",
     share: "Share",
     copy: "Copy message",
     copied: "Message copied",

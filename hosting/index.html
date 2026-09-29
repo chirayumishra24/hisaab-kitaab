@@ -2,26 +2,139 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HisabKitaab – No confusion. Just Hisab.</title>
-  <meta name="description" content="HisabKitaab helps you track money lent, borrowed, and shared – so every rupee is accounted for.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#002c49">
+  <title>HisabKitaab | No confusion. Just Hisab.</title>
+  <meta name="description" content="HisabKitaab helps you track money lent, borrowed and shared, so every rupee is accounted for.">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#f1f5f9}
-    .card{text-align:center;padding:2.5rem;max-width:420px}
-    h1{font-size:2rem;margin-bottom:.75rem;background:linear-gradient(135deg,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    p{color:#94a3b8;line-height:1.6;margin-bottom:1.5rem}
-    a{display:inline-block;padding:.75rem 1.5rem;border-radius:.5rem;background:linear-gradient(135deg,#38bdf8,#818cf8);color:#fff;text-decoration:none;font-weight:600;transition:opacity .2s}
-    a:hover{opacity:.85}
-    .sub{font-size:.85rem;margin-top:1rem;color:#64748b}
+    :root {
+      --navy: #002c49;
+      --navy-deep: #001b2e;
+      --green: #00a86b;
+      --green-hover: #00b875;
+      --mint: #5fe3ae;
+      --on-green: #00140c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(120% 80% at 100% 0%, #0a3d5f 0%, var(--navy) 45%, var(--navy-deep) 100%);
+      color: #eef3f1;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+      -webkit-font-smoothing: antialiased;
+    }
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 56px 0;
+    }
+    .logo { height: 40px; width: auto; display: block; }
+    h1 {
+      margin-top: 32px;
+      font-size: clamp(40px, 8vw, 72px);
+      line-height: 1.02;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+    p.lead {
+      margin-top: 18px;
+      max-width: 44ch;
+      font-size: clamp(17px, 2.2vw, 20px);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.78);
+    }
+    .actions { margin-top: 36px; display: grid; gap: 12px; max-width: 520px; }
+    @media (min-width: 560px) { .actions { grid-template-columns: auto auto; justify-content: start; } }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 56px;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color 0.15s, transform 0.15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--green); color: var(--on-green); box-shadow: 0 8px 20px -6px rgba(0, 168, 107, 0.55); }
+    .btn-primary:hover { background: var(--green-hover); }
+    .btn-ghost { color: #fff; border: 1px solid rgba(255, 255, 255, 0.28); }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
+    .btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    ul.points {
+      margin-top: 56px;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 28px;
+    }
+    @media (min-width: 760px) { ul.points { grid-template-columns: repeat(3, 1fr); gap: 32px; } }
+    ul.points li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; color: rgba(255, 255, 255, 0.82); line-height: 1.5; }
+    ul.points strong { display: block; color: #fff; font-size: 16px; }
+    ul.points svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--mint); margin-top: 1px; }
+    footer {
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 20px 0 24px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    a:focus-visible { outline: 2px solid #84adff; outline-offset: 3px; }
+    @media (prefers-reduced-motion: no-preference) {
+      main > * { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+      main > *:nth-child(2) { animation-delay: 60ms; }
+      main > *:nth-child(3) { animation-delay: 120ms; }
+      main > *:nth-child(4) { animation-delay: 180ms; }
+      main > *:nth-child(5) { animation-delay: 240ms; }
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>HisabKitaab</h1>
-    <p>No confusion. Just Hisab.<br>Track money lent, borrowed, and shared – so every rupee is accounted for.</p>
-    <a href="https://hisabkitaab--ideathon-projects.us-central1.hosted.app">Open Web App</a>
-    <p class="sub">API &amp; download server for HisabKitaab.</p>
-  </div>
+  <main>
+    <img class="logo" src="/brand/wordmark-on-dark.png" alt="HisabKitaab" width="244" height="40">
+    <h1>No confusion.<br>Just Hisab.</h1>
+    <p class="lead">Track money you give, money you receive, and the people behind every transaction.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://hisabkitaab--ideathon-projects.us-central1.hosted.app/signup">
+        Start Your Hisab
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="/downloads/HisabKitaab.apk">
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M207.06,80.67c-.74-.74-1.49-1.46-2.24-2.17l24.84-24.84a8,8,0,0,0-11.32-11.32l-26,26a111.43,111.43,0,0,0-128.55.19L37.66,42.34A8,8,0,0,0,26.34,53.66L51.4,78.72A113.38,113.38,0,0,0,16,161.13V184a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V160A111.25,111.25,0,0,0,207.06,80.67ZM92,160a12,12,0,1,1,12-12A12,12,0,0,1,92,160Zm72,0a12,12,0,1,1,12-12A12,12,0,0,1,164,160Z"/></svg>
+        Download for Android
+      </a>
+    </div>
+    <ul class="points">
+      <li>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+        <span><strong>See who owes you</strong>To Receive, To Pay and Overdue in one look.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+        <span><strong>Polite reminders</strong>A ready message for WhatsApp or SMS.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+        <span><strong>Private and backed up</strong>Every record is locked to your account.</span>
+      </li>
+    </ul>
+  </main>
+  <footer>Built by The Golden Innovaters</footer>
 </body>
 </html>

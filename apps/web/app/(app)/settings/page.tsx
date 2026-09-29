@@ -13,6 +13,7 @@ import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Card, PersonAvatar } from "@/components/ui/Display";
 import { Switch } from "@/components/ui/Switch";
 import { useToast } from "@/components/ui/Toast";
+import { useNativeApp } from "@/lib/native";
 
 const APK_URL = process.env.NEXT_PUBLIC_ANDROID_APK_URL;
 
@@ -23,6 +24,7 @@ export default function SettingsPage() {
   const confirm = useConfirm();
   const router = useRouter();
   const archived = contacts.filter((c) => c.archived);
+  const inApp = useNativeApp();
 
   const save = async (patch: Parameters<typeof updateProfile>[2]) => {
     try {
@@ -117,7 +119,7 @@ export default function SettingsPage() {
         </SettingsSection>
       ) : null}
 
-      {APK_URL ? (
+      {APK_URL && !inApp ? (
         <a
           href={APK_URL}
           className="flex items-center gap-4 rounded-[var(--radius-card)] border border-line bg-surface p-4 shadow-[var(--shadow-card)] hover:border-line-strong sm:p-5"

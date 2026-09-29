@@ -6,7 +6,7 @@ import { cn } from "./cn";
  * `onDark` forces the white variant; otherwise it follows the color scheme.
  */
 export function Logo({ className, onDark, priority }: { className?: string; onDark?: boolean; priority?: boolean }) {
-  const common = { width: 2124, height: 348, priority };
+  const common = { width: 2124, height: 348, priority, sizes: "320px" };
   if (onDark) {
     return <Image {...common} alt="HisabKitaab" src="/brand/wordmark-on-dark.png" className={cn("h-7 w-auto", className)} />;
   }

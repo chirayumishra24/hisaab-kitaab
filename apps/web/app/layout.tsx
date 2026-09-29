@@ -34,9 +34,23 @@ export const viewport: Viewport = {
   ],
 };
 
+/*
+ * Runs before first paint. Inside the Android app (Capacitor injects its bridge
+ * into <head> ahead of this script; newer builds also tag the user agent) it
+ * marks <html> with `native` and skips the marketing page, so the app opens
+ * straight into the product like a native app would.
+ */
+const NATIVE_BOOT = `(function(){try{var w=window,c=w.Capacitor,ua=navigator.userAgent||"";
+var n=(c&&c.isNativePlatform&&c.isNativePlatform())||/HisabKitaabApp/.test(ua)||(w.matchMedia&&w.matchMedia("(display-mode: standalone)").matches);
+if(!n)return;document.documentElement.classList.add("native");
+if(location.pathname==="/"){location.replace("/dashboard");}}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={manrope.variable}>
+    <html lang="en" className={manrope.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: NATIVE_BOOT }} />
+      </head>
       <body>
         <a
           href="#main"

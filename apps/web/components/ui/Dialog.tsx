@@ -106,7 +106,7 @@ export function Dialog({
             aria-labelledby={titleId}
             aria-describedby={description ? descId : undefined}
             className={cn(
-              "relative flex max-h-[92dvh] w-full flex-col overflow-hidden bg-surface shadow-[var(--shadow-raised)]",
+              "relative flex max-h-[calc(100dvh-var(--sat)-12px)] w-full flex-col overflow-hidden bg-surface shadow-[var(--shadow-raised)]",
               "rounded-t-[22px] sm:rounded-[var(--radius-card)]",
               widths[size],
             )}

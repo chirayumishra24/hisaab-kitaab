@@ -68,7 +68,7 @@ export default function LandingPage() {
 
 function SiteNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-canvas/85 backdrop-blur-md">
+    <header className="safe-top sticky top-0 z-40 border-b border-line/60 bg-canvas/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" aria-label="HisabKitaab home">
           <Logo className="h-6 sm:h-7" priority />
@@ -85,7 +85,7 @@ function SiteNav() {
           </a>
         </nav>
         <div className="flex items-center gap-2">
-          <Link href="/login" className={buttonClasses("ghost", "sm", "hidden sm:inline-flex")}>
+          <Link href="/login" className={buttonClasses("ghost", "sm")}>
             {t("landing.login")}
           </Link>
           <Link href="/signup" className={buttonClasses("primary", "sm")}>
@@ -99,16 +99,19 @@ function SiteNav() {
 
 function Hero() {
   return (
-    <section className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-20 lg:pb-24">
+    <section className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 pt-10 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-20 lg:pb-24">
       <div className="animate-rise">
-        <Logo className="h-9 sm:h-11" />
-        <h1 className="mt-6 text-[40px] leading-[1.05] font-extrabold tracking-tight text-ink sm:text-[52px] lg:text-[60px]">
+        <p className="inline-flex h-8 items-center gap-2 rounded-full bg-receive-soft px-3 text-[13px] font-bold text-receive">
+          <Storefront size={16} weight="bold" aria-hidden />
+          For local shops and families
+        </p>
+        <h1 className="mt-5 text-[42px] leading-[1.05] font-extrabold tracking-tight text-ink sm:text-[52px] lg:text-[60px]">
           No confusion.
           <br />
           Just Hisab.
         </h1>
-        <p className="mt-5 max-w-[46ch] text-lg leading-relaxed text-body sm:text-xl">{t("landing.heroBody")}</p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-body sm:text-xl">{t("landing.heroBody")}</p>
+        <div className="mt-8 grid gap-3 sm:flex sm:flex-row">
           <Link href="/signup" className={buttonClasses("accent", "lg", "shadow-[var(--shadow-fab)]")}>
             {t("landing.cta")}
             <ArrowRight size={20} weight="bold" aria-hidden />
@@ -180,7 +183,7 @@ function Problem() {
   ];
   return (
     <section className="bg-navy text-white">
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:py-24">
+      <div className="reveal mx-auto grid max-w-[1200px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:py-24">
         <h2 className="text-[30px] leading-[1.15] font-extrabold tracking-tight sm:text-[38px]">
           Many local shops struggle to manage the money they receive, and sometimes get cheated.
         </h2>
@@ -204,24 +207,22 @@ function Problem() {
 
 function Story() {
   return (
-    <section className="mx-auto grid max-w-[1200px] items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:py-24">
-      <div className="order-2 lg:order-1">
-        <h2 className="text-[28px] leading-tight font-extrabold tracking-tight text-ink sm:text-[34px]">
-          It started as a wooden box that cost {formatINR(140000)}.
-        </h2>
-        <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-body">
-          Our first HisabKitaab was a physical box for keeping a shop&apos;s records in one place. The app keeps that same
-          simple idea, and adds totals, reminders and a record that never gets lost.
-        </p>
-      </div>
-      <figure className="order-1 overflow-hidden rounded-[var(--radius-card)] border border-line shadow-[var(--shadow-card)] lg:order-2">
+    <section className="reveal mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:py-24">
+      <h2 className="max-w-[24ch] text-[28px] leading-tight font-extrabold tracking-tight text-ink sm:text-[38px]">
+        It started as a wooden box that cost {formatINR(140000)}.
+      </h2>
+      <p className="mt-4 max-w-[60ch] text-lg leading-relaxed text-body">
+        Our first HisabKitaab was a physical box for keeping a shop&apos;s records in one place. The app keeps that same
+        simple idea, and adds totals, reminders and a record that never gets lost.
+      </p>
+      <figure className="mt-10 overflow-hidden rounded-[var(--radius-card)] border border-line shadow-[var(--shadow-card)]">
         <Image
           src="/brand/prototype-box.jpg"
           alt="The original HisabKitaab prototype: a wooden box with compartments for records, labelled 'No confusion. Just Hisab.'"
           width={852}
           height={347}
           className="h-auto w-full"
-          sizes="(min-width: 1024px) 600px, 100vw"
+          sizes="(min-width: 1200px) 1152px, 100vw"
         />
       </figure>
     </section>
@@ -237,7 +238,7 @@ function HowItWorks() {
   ];
   return (
     <section id="how" className="scroll-mt-20 border-y border-line bg-surface">
-      <div className="mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:py-24">
+      <div className="reveal mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:py-24">
         <h2 className="max-w-[22ch] text-[28px] leading-tight font-extrabold tracking-tight text-ink sm:text-[36px]">
           Add a record in under 20 seconds.
         </h2>
@@ -262,7 +263,7 @@ function HowItWorks() {
 
 function Features() {
   return (
-    <section id="features" className="mx-auto max-w-[1200px] scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
+    <section id="features" className="reveal mx-auto max-w-[1200px] scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
       <h2 className="max-w-[24ch] text-[28px] leading-tight font-extrabold tracking-tight text-ink sm:text-[36px]">
         Everything you need. Nothing you don&apos;t.
       </h2>
@@ -332,7 +333,7 @@ function Audiences() {
     },
   ];
   return (
-    <section className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 lg:pb-24">
+    <section className="reveal mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 lg:pb-24">
       <div className="grid gap-4 lg:grid-cols-2">
         {groups.map(({ icon: IconCmp, title, body, points, tone }) => (
           <div key={title} className={cn("rounded-[var(--radius-card)] p-6 sm:p-8", tone)}>
@@ -357,7 +358,7 @@ function Audiences() {
 function Reminders() {
   return (
     <section className="border-y border-line bg-surface">
-      <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:py-24">
+      <div className="reveal mx-auto grid max-w-[1200px] items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:py-24">
         <div className="mx-auto w-full max-w-[420px]">
           <div className="rounded-2xl rounded-tl-md border border-line bg-receive-soft/60 p-5 dark:bg-sunken">
             <p className="text-[15px] leading-relaxed whitespace-pre-line text-ink">{sampleMessage}</p>
@@ -396,7 +397,7 @@ function Privacy() {
     { icon: CloudCheck, title: "Safely backed up", body: "Change phones without losing a single entry." },
   ];
   return (
-    <section id="privacy" className="mx-auto max-w-[1200px] scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
+    <section id="privacy" className="reveal mx-auto max-w-[1200px] scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
       <h2 className="text-[28px] leading-tight font-extrabold tracking-tight text-ink sm:text-[36px]">Your records stay private.</h2>
       <ul className="mt-10 grid divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface md:grid-cols-3 md:divide-x md:divide-y-0">
         {points.map(({ icon: IconCmp, title, body }) => (
@@ -415,7 +416,7 @@ function Privacy() {
 
 function FinalCta() {
   return (
-    <section className="px-4 pb-16 sm:px-6 lg:pb-24">
+    <section className="reveal px-4 pb-16 sm:px-6 lg:pb-24">
       <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-8 rounded-[28px] bg-navy px-6 py-12 text-white sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:py-16">
         <div>
           <Logo onDark className="h-8" />
@@ -442,7 +443,7 @@ function FinalCta() {
 
 function Footer() {
   return (
-    <footer className="border-t border-line">
+    <footer className="safe-bottom border-t border-line">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-3">
           <Logo className="h-5" />

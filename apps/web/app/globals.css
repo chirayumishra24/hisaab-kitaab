@@ -11,6 +11,12 @@
 
 @custom-variant dark (@media (prefers-color-scheme: dark));
 
+/*
+ * `native:` styles apply inside the Android app (Capacitor WebView). The class is
+ * set on <html> by an inline script in app/layout.tsx before first paint.
+ */
+@custom-variant native (&:where(.native, .native *));
+
 :root {
   --canvas: #f5f7f6;
   --surface: #ffffff;
@@ -41,6 +47,16 @@
 
   --shadow-color: 205 100% 14%;
   color-scheme: light;
+
+  /*
+   * Safe-area insets. Capacitor's SystemBars plugin injects --safe-area-inset-*
+   * on Android (the WebView env() values are unreliable before Chromium 140);
+   * browsers and iOS fall back to env().
+   */
+  --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -132,7 +148,18 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
     text-rendering: optimizeLegibility;
+  }
+  /* App feel inside the Android shell: no rubber-band, no accidental text selection on chrome. */
+  html.native,
+  html.native body {
+    overscroll-behavior-y: none;
+  }
+  html.native :where(button, a, nav, header, [role="tab"], label) {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
   body {
     background: var(--canvas);
@@ -177,7 +204,48 @@
 }
 
 @utility safe-bottom {
-  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  padding-bottom: var(--sab);
+}
+
+@utility safe-top {
+  padding-top: var(--sat);
+}
+
+/* Section reveal on scroll, CSS-only (scroll-driven animations where supported). */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility page-in {
+  animation: page-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

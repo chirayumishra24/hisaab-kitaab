@@ -7,6 +7,7 @@ import { CheckCircle } from "@phosphor-icons/react";
 import { NotConfigured } from "@/components/app/NotConfigured";
 import { Logo } from "@/components/ui/Logo";
 import { useAuth } from "@/lib/auth";
+import { useStatusBarStyle } from "@/lib/native";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -20,6 +21,8 @@ function AuthFrame({ children }: { children: ReactNode }) {
   const state = useAuth();
   const router = useRouter();
   const params = useSearchParams();
+  // The phone layout puts a navy band behind the status bar.
+  useStatusBarStyle("DARK");
 
   useEffect(() => {
     if (state.status === "signedIn") {
@@ -31,7 +34,7 @@ function AuthFrame({ children }: { children: ReactNode }) {
   if (state.status === "unconfigured") return <NotConfigured />;
 
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+    <div className="flex min-h-dvh flex-col bg-navy lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:bg-canvas">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-navy p-12 text-white lg:flex">
         <Link href="/" aria-label="HisabKitaab home">
           <Logo onDark className="h-9" priority />
@@ -49,11 +52,19 @@ function AuthFrame({ children }: { children: ReactNode }) {
         </div>
         <p className="text-sm text-white/60">Made for local shops, small businesses and families.</p>
       </aside>
-      <main id="main" className="flex flex-col px-5 py-8 sm:px-10 lg:justify-center lg:px-16">
-        <Link href="/" className="mb-10 lg:hidden" aria-label="HisabKitaab home">
-          <Logo className="h-7" priority />
-        </Link>
-        <div className="w-full max-w-sm lg:mx-auto">{children}</div>
+      {/* Phones: an app-style welcome band, with the form on a sheet below it. */}
+      <header className="safe-top bg-navy text-white lg:hidden">
+        <div className="px-5 pt-7 pb-14 sm:px-10">
+          <Logo onDark className="h-8" priority />
+          <p className="mt-6 text-[28px] leading-[1.1] font-extrabold tracking-tight">No confusion. Just Hisab.</p>
+          <p className="mt-2 text-[15px] text-white/75">See who owes you, in one look.</p>
+        </div>
+      </header>
+      <main
+        id="main"
+        className="relative -mt-7 flex flex-1 flex-col rounded-t-[28px] bg-canvas px-5 pt-8 pb-[calc(2rem+var(--sab))] sm:px-10 lg:mt-0 lg:justify-center lg:rounded-none lg:px-16 lg:py-8"
+      >
+        <div className="w-full max-w-sm sm:mx-auto">{children}</div>
       </main>
     </div>
   );

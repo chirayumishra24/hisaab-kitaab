@@ -23,13 +23,20 @@ function isActive(pathname: string, href: string) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[256px_1fr]">
       <DesktopSidebar />
       <div className="flex min-w-0 flex-col">
         <MobileHeader />
-        <main id="main" className="mx-auto w-full max-w-[1120px] flex-1 px-4 pt-4 pb-32 sm:px-6 lg:px-10 lg:pt-8 lg:pb-12">
-          {children}
+        <main
+          id="main"
+          className="mx-auto w-full max-w-[1120px] flex-1 px-4 pt-3 pb-[calc(7rem+var(--sab))] sm:px-6 lg:px-10 lg:pt-8 lg:pb-12"
+        >
+          {/* Keyed by route so each screen eases in, like a native screen push. */}
+          <div key={pathname} className="page-in">
+            {children}
+          </div>
         </main>
       </div>
       <BottomNavigation />
@@ -107,13 +114,15 @@ function MobileHeader() {
   const { user } = useServices();
   const name = profile?.displayName || user.displayName || "";
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line/70 bg-canvas/90 px-4 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-canvas lg:hidden">
-      <Link href="/dashboard" aria-label="HisabKitaab home">
-        <Logo className="h-[22px]" priority />
-      </Link>
-      <Link href="/profile" aria-label={t("nav.profile")} className="rounded-full">
-        <PersonAvatar id={user.uid} name={name || "?"} size="sm" />
-      </Link>
+    <header className="safe-top sticky top-0 z-30 border-b border-line/70 bg-canvas/90 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-canvas lg:hidden">
+      <div className="flex h-14 items-center justify-between pr-[max(1rem,var(--sar))] pl-[max(1rem,var(--sal))]">
+        <Link href="/dashboard" aria-label="HisabKitaab home" className="flex h-11 items-center">
+          <Logo className="h-[22px]" priority />
+        </Link>
+        <Link href="/profile" aria-label={t("nav.profile")} className="flex size-11 items-center justify-center rounded-full active:bg-sunken">
+          <PersonAvatar id={user.uid} name={name || "?"} size="sm" />
+        </Link>
+      </div>
     </header>
   );
 }
@@ -132,12 +141,19 @@ function BottomNavigation() {
         href={href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold",
-          active ? "text-primary" : "text-muted",
+          "group flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11.5px] font-bold tracking-tight transition-colors",
+          active ? "text-ink" : "text-muted",
         )}
       >
-        <IconCmp size={24} weight={active ? "fill" : "regular"} aria-hidden />
-        {t(`nav.${key}`)}
+        <span
+          className={cn(
+            "flex h-8 w-14 items-center justify-center rounded-full transition-[background-color,transform] duration-200 group-active:scale-90",
+            active ? "bg-receive-soft text-receive" : "",
+          )}
+        >
+          <IconCmp size={22} weight={active ? "fill" : "regular"} aria-hidden />
+        </span>
+        <span className="max-w-full truncate">{t(`nav.${key}`)}</span>
       </Link>
     );
   };
@@ -145,18 +161,18 @@ function BottomNavigation() {
   return (
     <nav
       aria-label="Main"
-      className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 backdrop-blur-md lg:hidden"
+      className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-surface lg:hidden"
     >
-      <div className="mx-auto flex h-16 max-w-lg items-stretch px-2">
+      <div className="mx-auto grid h-[68px] max-w-lg grid-cols-5 items-stretch px-1">
         {left.map(item)}
-        <div className="flex flex-1 items-start justify-center">
+        <div className="flex items-center justify-center">
           <button
             type="button"
             onClick={() => dialogs.open({ type: "addHisab" })}
             aria-label={t("nav.addHisab")}
-            className="-mt-5 flex size-16 flex-col items-center justify-center rounded-full bg-accent text-on-accent shadow-[var(--shadow-fab)] ring-4 ring-canvas transition-transform active:scale-95"
+            className="flex size-14 items-center justify-center rounded-[20px] bg-accent text-on-accent shadow-[var(--shadow-fab)] transition-transform active:scale-90"
           >
-            <Plus size={28} weight="bold" aria-hidden />
+            <Plus size={26} weight="bold" aria-hidden />
           </button>
         </div>
         {right.map(item)}

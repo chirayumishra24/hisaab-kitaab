@@ -165,7 +165,7 @@ function ProductPreview() {
           ))}
         </ul>
       </div>
-      <div className="absolute -bottom-6 -left-3 hidden max-w-[250px] rounded-2xl rounded-bl-md border border-line bg-surface p-3.5 shadow-[var(--shadow-raised)] sm:block lg:-left-10">
+      <div className="absolute -bottom-16 -left-3 hidden max-w-[250px] rounded-2xl rounded-bl-md border border-line bg-surface p-3.5 shadow-[var(--shadow-raised)] sm:block lg:-left-10">
         <p className="flex items-center gap-1.5 text-[12px] font-bold text-receive">
           <CheckCircle size={14} weight="fill" aria-hidden /> Reminder shared
         </p>

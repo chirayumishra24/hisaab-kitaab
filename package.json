@@ -11,14 +11,21 @@
   ],
   "scripts": {
     "dev:web": "npm run dev -w @hisabkitaab/web",
-    "dev:mobile": "npm run start -w @hisabkitaab/mobile",
+    "emulators:dev": "firebase emulators:start --project demo-hisabkitaab --only auth,firestore,functions",
     "emulators": "firebase emulators:start --project demo-hisabkitaab --import=./.emulator-data --export-on-exit",
     "build:web": "npm run build -w @hisabkitaab/web",
+    "build:functions": "npm run build -w @hisabkitaab/functions",
+    "build:apk": "npm run build -w @hisabkitaab/mobile && npm run build:apk -w @hisabkitaab/mobile",
+    "pack:shared": "npm pack -w @hisabkitaab/shared --pack-destination apps/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test -w @hisabkitaab/shared",
     "test:rules": "firebase emulators:exec --only firestore --project demo-hisabkitaab \"npm run test -w @hisabkitaab/firebase\"",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run test:rules"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run test:rules",
+    "deploy:rules": "firebase deploy --only firestore --project ideathon-projects",
+    "deploy:functions": "firebase deploy --only functions:hisabkitaab --project ideathon-projects",
+    "deploy:hosting": "firebase deploy --only hosting --project ideathon-projects",
+    "deploy:web": "firebase deploy --only apphosting:hisabkitaab --project ideathon-projects"
   },
   "overrides": {
     "react": "19.2.3",
